@@ -1,9 +1,10 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
-from .models import Product
+from .models import Product, User
 from .serializers import ProductSerializer
-
+from rest_framework.views import APIView
+import random
 
 class ProductViewSet(viewsets.ViewSet):
     def list(self, request):
@@ -47,3 +48,15 @@ class ProductViewSet(viewsets.ViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Product.DoesNotExist:
             return Response ({"Message" : "Product not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class UserAPIView(APIView):
+    def get(self, _):
+        """
+        return a random user
+        """
+        users = User.objects.all()
+        user = random.choice(users)
+        return Response({
+            'id' : user.id
+        })
