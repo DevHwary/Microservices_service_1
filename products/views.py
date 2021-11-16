@@ -59,4 +59,4 @@ class UserAPIView(APIView):
         user = random.choice(users)
         return Response({
             'id' : user.id
-        })
+        }, status=status.HTTP_200_OK)

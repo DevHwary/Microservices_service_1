@@ -5,7 +5,7 @@ from django.test import client
 from rest_framework.test import APITestCase
 from rest_framework import status
 from django.urls import reverse
-from .models import Product
+from .models import Product, User
 import json
 
 
@@ -56,4 +56,16 @@ class ProductTests(APITestCase):
         response = self.client.delete(url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        
+
+
+
+class UserTests(APITestCase):
+    def test_get(self):
+        user = User.objects.create(id=1)
+        user.save()
+
+        url = '/api/user/'
+        response = self.client.get(url)
+                
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(User.objects.count(), 1)    # test the created user object
