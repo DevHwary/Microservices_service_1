@@ -12,7 +12,6 @@ class ProductViewSet(viewsets.ViewSet):
     def list(self, request):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
-        publish()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -21,6 +20,7 @@ class ProductViewSet(viewsets.ViewSet):
         serializer = ProductSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        publish('product-created', serializer.data)     # send message to the main(Flask) app
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -39,6 +39,7 @@ class ProductViewSet(viewsets.ViewSet):
             serializer = ProductSerializer(instance=product, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            publish('product-updated', serializer.data)     # send message to the main(Flask) app
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
         except Product.DoesNotExist:
             return Response ({"Message" : "Product not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -49,6 +50,7 @@ class ProductViewSet(viewsets.ViewSet):
             product = Product.objects.get(id=pk)
             product.delete()
             product.save()
+            publish('product-deleted', pk)  # send message to the main(Flask) app
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Product.DoesNotExist:
             return Response ({"Message" : "Product not found"}, status=status.HTTP_404_NOT_FOUND)
